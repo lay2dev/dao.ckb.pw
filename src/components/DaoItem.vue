@@ -1,0 +1,182 @@
+<template>
+  <div class="column container q-px-md q-py-sm">
+    <div class="col row justify-between items-center">
+      <div class="col column q-gutter-xs">
+        <div class="row items-center">
+          <div class="text-accent cap-text q-mr-xs">{{capacity}} CKB</div>
+          <q-chip
+            square
+            color="yellow-1"
+            text-color="warning"
+            size="0.8em"
+            dense
+            :label="`+${revenue} CKB`"
+          />
+        </div>
+        <div class="col row justify-start">
+          <div class="text-caption text-grey">{{$t('dao_item.label.deposited_at')}} {{depositedAt}}</div>
+          <div v-if="completedAt" class="row text-caption text-grey">
+            <div class="q-mx-sm">-</div>
+            {{$t('dao_item.label.completed_at')}} {{completedAt}}
+          </div>
+          <div v-else-if="withdrawnAt" class="row text-caption text-grey">
+            <div class="q-mx-sm">-</div>
+            {{$t('dao_item.label.withdrawn_at')}} {{withdrawnAt}}
+          </div>
+        </div>
+      </div>
+      <div v-if="cell.daoType !== 'complete'" class="column">
+        <q-btn
+          rounded
+          unelevated
+          :color="`${cell.daoType ==='withdraw' ? 'primary' : 'accent'}`"
+          no-caps
+          :disable="!canWithdraw"
+          :label="$t(`dao_item.btn.${cell.daoType ==='withdraw' ? 'withdraw' : 'settle'}`)"
+          @click="cell.phase === 7 ? withdraw() : confirm = true"
+        />
+      </div>
+    </div>
+    <div v-if="cell.daoType !== 'complete'" class="col column q-gutter-xs">
+      <q-linear-progress
+        :value="progress"
+        rounded
+        :color="progressColor"
+        track-color="lightgrey"
+        class="q-mt-sm"
+      />
+      <div class="text-dark text-caption">{{phaseHint}}</div>
+    </div>
+
+    <!-- Dialogs -->
+    <q-dialog v-model="confirm" position="bottom" persistent>
+      <q-card class="q-ma-lg q-pa-md">
+        <div class="column items-center">
+          <span
+            class="text-accent text-center text-bold"
+          >{{$t(cell.phase === 4 ? 'dao_item.label.risk_notice':'dao_item.label.confirm')}}</span>
+          <span
+            class="text-grey q-my-md"
+          >{{$t(`phase_alert.${cell.phase}`, {blocks: 180 - cell.epochsPast, hours: cell.hoursLeft, days: cell.daysLeft})}}</span>
+        </div>
+        <div v-if="cell.phase === 4" class="row q-gutter-sm">
+          <q-btn
+            class="col"
+            unelevated
+            :label="$t('dao_item.btn.confirm')"
+            color="negative"
+            @click="withdraw"
+            v-close-popup
+          />
+          <q-btn
+            class="col"
+            unelevated
+            :label="$t('dao_item.btn.cancel')"
+            color="accent"
+            v-close-popup
+          />
+        </div>
+        <div v-else class="row q-gutter-sm">
+          <q-btn
+            class="col"
+            unelevated
+            :label="$t('dao_item.btn.cancel')"
+            color="accent"
+            v-close-popup
+          />
+          <q-btn
+            class="col"
+            unelevated
+            :label="$t('dao_item.btn.settle')"
+            color="primary"
+            @click="withdraw"
+            v-close-popup
+          />
+        </div>
+      </q-card>
+    </q-dialog>
+  </div>
+</template>
+
+<script>
+  import { AmountUnit } from "@lay2/pw-core";
+  import { DaoCell } from "../models";
+  export default {
+    name: "DaoItem",
+    props: ["cell"],
+    data() {
+      return {
+        stage: this.cell.stage,
+        progress: this.cell.progress,
+        blocks: this.cell.blocks,
+        days: this.cell.daysLeft,
+        hours: this.cell.hoursLeft,
+        epochs: this.cell.epochsPast,
+        confirm: false
+      };
+    },
+    computed: {
+      capacity() {
+        return this.cell.capacity.toString(AmountUnit.ckb, { commify: true });
+      },
+      revenue() {
+        return this.cell.revenue.toString(AmountUnit.ckb, {
+          commify: true,
+          fixed: 5
+        });
+      },
+      depositedAt() {
+        return new Date(this.cell.depositedAt).toLocaleDateString();
+      },
+      withdrawnAt() {
+        return this.cell.withdrawnAt
+          ? new Date(this.cell.withdrawnAt).toLocaleDateString()
+          : null;
+      },
+      completedAt() {
+        return this.cell.completedAt
+          ? new Date(this.cell.completedAt).toLocaleDateString()
+          : null;
+      },
+      canWithdraw() {
+        return [2, 3, 4, 7].find(p => p === this.cell.phase) !== undefined;
+      },
+      progressColor() {
+        const { phase } = this.cell;
+        if ([1, 5, 6].find(p => p === phase)) return "grey";
+        if (phase === 2) return "warning";
+        if (phase === 4) return "negative";
+        return "primary";
+      },
+      phaseHint() {
+        const { phase } = this.cell;
+        return this.$t(`phase_hint.${phase}`, {
+          hours: this.cell.hoursLeft,
+          days: this.cell.daysLeft,
+          blocks: 180 - this.cell.epochsPast
+        });
+      }
+    },
+    methods: {
+      withdraw() {
+        this.$emit("withdraw", this.cell);
+      }
+    }
+  };
+</script>
+
+<style lang="scss" scoped>
+  .container {
+    background: white;
+    border-radius: 5px;
+  }
+
+  .cap-text {
+    font-size: 1.15em;
+    font-weight: 500;
+  }
+
+  .q-chip {
+    margin: 0;
+  }
+</style>

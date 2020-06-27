@@ -1,0 +1,10 @@
+{
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
+
+  "vetur.experimental.templateInterpolationService": true,
+  "vetur.format.defaultFormatterOptions": {
+    "prettier": {}
+  },
+  "vetur.format.scriptInitialIndent": true,
+  "vetur.format.styleInitialIndent": true
+}
