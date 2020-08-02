@@ -6,22 +6,38 @@
           <div class="text-accent cap-text q-mr-xs">{{capacity}} CKB</div>
           <q-chip
             square
-            color="yellow-1"
-            text-color="warning"
+            color="lime-1"
+            text-color="primary"
             size="0.8em"
             dense
             :label="`+${revenue} CKB`"
           />
         </div>
-        <div class="col row justify-start">
-          <div class="text-caption text-grey">{{$t('dao_item.label.deposited_at')}} {{depositedAt}}</div>
+        <div class="col row justify-start items-center">
+          <div
+            class="text-caption text-grey q-mr-sm"
+          >{{$t('dao_item.label.deposited_at')}} {{depositedAt}}</div>
           <div v-if="completedAt" class="row text-caption text-grey">
             <div class="q-mx-sm">-</div>
             {{$t('dao_item.label.completed_at')}} {{completedAt}}
           </div>
-          <div v-else-if="withdrawnAt" class="row text-caption text-grey">
-            <div class="q-mx-sm">-</div>
+          <div v-else-if="withdrawnAt" class="row text-caption text-grey q-mr-sm">
+            <!-- <div class="q-mx-sm">-</div> -->
             {{$t('dao_item.label.withdrawn_at')}} {{withdrawnAt}}
+          </div>
+          <div>
+            <q-btn
+              v-if="!completedAt"
+              size="sm"
+              dense
+              round
+              unelevated
+              flat
+              color="grey-5"
+              icon="info"
+            >
+              <q-tooltip max-width="50%">{{phaseHint}}</q-tooltip>
+            </q-btn>
           </div>
         </div>
       </div>
@@ -37,15 +53,14 @@
         />
       </div>
     </div>
-    <div v-if="cell.daoType !== 'complete'" class="col column q-gutter-xs">
+    <div v-if="cell.daoType !== 'complete'" class="col row">
       <q-linear-progress
         :value="progress"
         rounded
         :color="progressColor"
         track-color="lightgrey"
-        class="q-mt-sm"
+        class="q-my-sm"
       />
-      <div class="text-dark text-caption">{{phaseHint}}</div>
     </div>
 
     <!-- Dialogs -->
@@ -112,7 +127,7 @@
         days: this.cell.daysLeft,
         hours: this.cell.hoursLeft,
         epochs: this.cell.epochsPast,
-        confirm: false
+        confirm: false,
       };
     },
     computed: {
@@ -122,7 +137,7 @@
       revenue() {
         return this.cell.revenue.toString(AmountUnit.ckb, {
           commify: true,
-          fixed: 5
+          fixed: 5,
         });
       },
       depositedAt() {
@@ -139,11 +154,11 @@
           : null;
       },
       canWithdraw() {
-        return [2, 3, 4, 7].find(p => p === this.cell.phase) !== undefined;
+        return [2, 3, 4, 7].find((p) => p === this.cell.phase) !== undefined;
       },
       progressColor() {
         const { phase } = this.cell;
-        if ([1, 5, 6].find(p => p === phase)) return "grey";
+        if ([1, 5, 6].find((p) => p === phase)) return "grey";
         if (phase === 2) return "warning";
         if (phase === 4) return "negative";
         return "primary";
@@ -153,15 +168,15 @@
         return this.$t(`phase_hint.${phase}`, {
           hours: this.cell.hoursLeft,
           days: this.cell.daysLeft,
-          blocks: 180 - this.cell.epochsPast
+          blocks: 180 - this.cell.epochsPast,
         });
-      }
+      },
     },
     methods: {
       withdraw() {
         this.$emit("withdraw", this.cell);
-      }
-    }
+      },
+    },
   };
 </script>
 

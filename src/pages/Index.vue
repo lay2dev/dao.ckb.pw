@@ -5,7 +5,7 @@
         <q-item class="col">
           <q-item-section side>
             <q-avatar color="white" size="48px">
-              <img src="~assets/nervos-n.svg" style="height: 24px;" />
+              <img src="~assets/dao.svg" style="height: 24px;" />
             </q-avatar>
           </q-item-section>
           <q-item-section>
@@ -13,7 +13,7 @@
             <q-item-label caption>{{$t('meta.label.slogan')}}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-item-label class="text-warning text-bold">{{(apc * 100).toFixed(2)}}%</q-item-label>
+            <q-item-label class="text-yellow-6 text-subtitle2">{{(apc * 100).toFixed(2)}}%</q-item-label>
             <q-item-label caption class="row items-center">
               <q-icon name="ion-information-circle-outline" class="q-mr-xs" />
               {{$t('meta.label.apc')}}
@@ -139,7 +139,7 @@
   export default {
     name: "PageIndex",
     components: {
-      DaoItem
+      DaoItem,
     },
     data() {
       return {
@@ -153,9 +153,9 @@
           type: "positive",
           message: "test test test test test test",
           link: null,
-          loading: false
+          loading: false,
         },
-        loading: false
+        loading: false,
       };
     },
     async mounted() {
@@ -177,7 +177,7 @@
         !silent && this.showLoading(true);
         const res = await Promise.all([
           await API.loadMetaData(),
-          await API.loadDaoCells()
+          await API.loadDaoCells(),
         ]);
         this.balanceAmount = res[0].balance;
         this.apc = res[0].apc;
@@ -185,8 +185,9 @@
 
         if (this.banner.show && this.banner.link) {
           if (
-            this.items.find(i => this.banner.link.endsWith(i.outPoint.txHash)) !==
-            undefined
+            this.items.find((i) =>
+              this.banner.link.endsWith(i.outPoint.txHash)
+            ) !== undefined
           ) {
             this.banner = {};
             this.$q.localStorage.remove("banner");
@@ -228,14 +229,14 @@
         }
         this.showLoading(false);
       },
-      openUrl: url => openURL(url),
+      openUrl: (url) => openURL(url),
       setPendingBanner(txHash) {
         this.banner = {
           show: true,
           type: "positive",
           loading: true,
           message: this.$t("banner.pending"),
-          link: `${process.env.EXPLORER_URL}/transaction/${txHash}`
+          link: `${process.env.EXPLORER_URL}/transaction/${txHash}`,
         };
         this.$q.localStorage.set("banner", this.banner);
       },
@@ -247,50 +248,56 @@
             spinnerColor: "accent",
             message: `<h6>${message}</h5>`,
             messageColor: "accent",
-            backgroundColor: "primary"
+            backgroundColor: "primary",
           });
         } else {
           this.$q.loading.hide();
         }
-      }
+      },
     },
     computed: {
       ...mapGetters("pwcore", {
-        address: "addressGetter"
+        address: "addressGetter",
       }),
       balance() {
         return this.balanceAmount
           ? this.balanceAmount.toString(AmountUnit.ckb, {
               commify: true,
-              fixed: 4
+              fixed: 4,
             })
           : "-";
       },
       stats() {
-        const lockedCells = this.items.filter(c => c.daoType !== "complete");
-        const unlockedCells = this.items.filter(c => c.daoType === "complete");
+        const lockedCells = this.items.filter((c) => c.daoType !== "complete");
+        const unlockedCells = this.items.filter((c) => c.daoType === "complete");
         let locked = "-",
           curYield = "-",
           cumYield = "-";
 
         if (lockedCells && lockedCells.length) {
           locked = lockedCells
-            .map(c => c.capacity)
+            .map((c) => c.capacity)
             .reduce((sum, cap) => sum.add(cap));
           curYield = lockedCells
-            .map(c => c.revenue)
+            .map((c) => c.revenue)
             .reduce((sum, r) => sum.add(r));
 
           cumYield = curYield;
           if (unlockedCells && unlockedCells.length) {
             const unlockedYield = unlockedCells
-              .map(c => c.revenue)
+              .map((c) => c.revenue)
               .reduce((sum, r) => sum.add(r));
             cumYield = curYield.add(unlockedYield);
           }
-          locked = locked.toString(AmountUnit.ckb, { fixed: 4 });
-          curYield = curYield.toString(AmountUnit.ckb, { fixed: 4 });
-          cumYield = cumYield.toString(AmountUnit.ckb, { fixed: 4 });
+          locked = locked.toString(AmountUnit.ckb, { commify: true, fixed: 4 });
+          curYield = curYield.toString(AmountUnit.ckb, {
+            commify: true,
+            fixed: 4,
+          });
+          cumYield = cumYield.toString(AmountUnit.ckb, {
+            commify: true,
+            fixed: 4,
+          });
         }
 
         return { locked, curYield, cumYield };
@@ -305,19 +312,19 @@
           if (val.match(/^\d+(\.\d+)?$/)) {
             this.depositAmount = new Amount(val);
           }
-        }
+        },
       },
       cells() {
         if (this.filter === "locked")
-          return this.items.filter(c => c.daoType !== "complete");
-        return this.items.filter(c => c.daoType === "complete");
-      }
+          return this.items.filter((c) => c.daoType !== "complete");
+        return this.items.filter((c) => c.daoType === "complete");
+      },
     },
     watch: {
       address() {
         this.load();
-      }
-    }
+      },
+    },
   };
 </script>
 
