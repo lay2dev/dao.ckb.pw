@@ -13,7 +13,7 @@
             <q-item-label caption>{{$t('meta.label.slogan')}}</q-item-label>
           </q-item-section>
           <q-item-section side>
-            <q-item-label class="text-yellow-6 text-subtitle2">{{(apc * 100).toFixed(2)}}%</q-item-label>
+            <q-item-label class="text-yellow-6 text-subtitle2">{{apc.toFixed(2)}}%</q-item-label>
             <q-item-label caption class="row items-center">
               <q-icon name="ion-information-circle-outline" class="q-mr-xs" />
               {{$t('meta.label.apc')}}
@@ -24,26 +24,41 @@
       <div class="col-8 row b q-px-md">
         <q-card bordered class="col column justify-center stat">
           <q-card-section horizontal>
-            <q-card-section class="column col">
-              <div class="text-grey text-caption">{{$t('meta.label.balance')}}</div>
-              <div class="text-accent meta-text">{{balance}}</div>
-            </q-card-section>
-            <q-separator vertical inset />
             <q-card-section class="col column">
               <div class="text-grey text-caption">{{$t('meta.label.locked')}}</div>
-              <div class="text-accent meta-text">{{stats.locked}}</div>
-            </q-card-section>
-          </q-card-section>
-          <q-separator inset />
-          <q-card-section horizontal>
-            <q-card-section class="col column">
-              <div class="text-grey text-caption">{{$t('meta.label.cur_yield')}}</div>
-              <div class="text-accent meta-text">{{stats.curYield}}</div>
+              <div class="text-accent text-bold" style="font-size:1.2em">{{locked}}</div>
             </q-card-section>
             <q-separator vertical inset />
-            <q-card-section class="col column">
-              <div class="text-grey text-caption">{{$t('meta.label.cum_yield')}}</div>
-              <div class="text-accent meta-text">{{stats.cumYield}}</div>
+            <q-card-section class="column justify-around">
+              <div class="row items-center q-gutter-xs">
+                <div class="text-grey text-caption">{{$t('meta.label.yesterday')}}</div>
+                <div class="text-accent meta-text">{{curYield}}</div>
+              </div>
+              <div class="row items-center q-gutter-xs">
+                <div class="text-grey text-caption">{{$t('meta.label.cum_yield')}}</div>
+                <div class="text-accent meta-text">{{cumYield}}</div>
+              </div>
+            </q-card-section>
+            <!-- <q-separator inset />
+            <q-card-section class="column"></q-card-section>-->
+          </q-card-section>
+          <q-separator inset />
+          <q-card-section horizontal class="items-center">
+            <q-card-section class="column col">
+              <div class="text-grey text-caption">{{$t('meta.label.balance')}}</div>
+              <div class="text-accent">{{balance}}</div>
+            </q-card-section>
+            <q-card-section class="column">
+              <q-btn
+                color="indigo-4"
+                outline
+                rounded
+                unelevated
+                no-caps
+                icon="img:statics/pw.svg"
+                :label="$t('meta.btn.wallet')"
+                @click="openUrl('https://ckb.pw')"
+              />
             </q-card-section>
           </q-card-section>
         </q-card>
@@ -144,8 +159,12 @@
     data() {
       return {
         apc: 0.0342,
-        balanceAmount: null,
+        balanceAmount: Amount.ZERO,
         depositAmount: new Amount("1000"),
+        lockedAmount: Amount.ZERO,
+        curYieldAmount: Amount.ZERO,
+        cumYieldAmount: Amount.ZERO,
+
         filter: "locked",
         items: [],
         banner: {
@@ -179,9 +198,12 @@
           await API.loadMetaData(),
           await API.loadDaoCells(),
         ]);
-        this.balanceAmount = res[0].balance;
-        this.apc = res[0].apc;
+        this.apc = Number(res[0].apc);
         this.items = res[1];
+        this.balanceAmount = res[0].balance;
+        this.lockedAmount = res[0].locked;
+        this.curYieldAmount = res[0].yieldLive;
+        this.cumYieldAmount = res[0].yieldCumulative;
 
         if (this.banner.show && this.banner.link) {
           if (
@@ -261,46 +283,47 @@
       }),
       balance() {
         return this.balanceAmount
-          ? this.balanceAmount.toString(AmountUnit.ckb, {
-              commify: true,
-              fixed: 4,
-            })
+          ? new Amount(this.balanceAmount, AmountUnit.shannon).toString(
+              AmountUnit.ckb,
+              {
+                commify: true,
+                fixed: 4,
+              }
+            )
           : "-";
       },
-      stats() {
-        const lockedCells = this.items.filter((c) => c.daoType !== "complete");
-        const unlockedCells = this.items.filter((c) => c.daoType === "complete");
-        let locked = "-",
-          curYield = "-",
-          cumYield = "-";
-
-        if (lockedCells && lockedCells.length) {
-          locked = lockedCells
-            .map((c) => c.capacity)
-            .reduce((sum, cap) => sum.add(cap));
-          curYield = lockedCells
-            .map((c) => c.revenue)
-            .reduce((sum, r) => sum.add(r));
-
-          cumYield = curYield;
-          if (unlockedCells && unlockedCells.length) {
-            const unlockedYield = unlockedCells
-              .map((c) => c.revenue)
-              .reduce((sum, r) => sum.add(r));
-            cumYield = curYield.add(unlockedYield);
-          }
-          locked = locked.toString(AmountUnit.ckb, { commify: true, fixed: 4 });
-          curYield = curYield.toString(AmountUnit.ckb, {
-            commify: true,
-            fixed: 4,
-          });
-          cumYield = cumYield.toString(AmountUnit.ckb, {
-            commify: true,
-            fixed: 4,
-          });
-        }
-
-        return { locked, curYield, cumYield };
+      locked() {
+        return this.lockedAmount
+          ? new Amount(this.lockedAmount, AmountUnit.shannon).toString(
+              AmountUnit.ckb,
+              {
+                commify: true,
+                fixed: 4,
+              }
+            )
+          : "-";
+      },
+      curYield() {
+        return this.curYieldAmount
+          ? new Amount(this.curYieldAmount, AmountUnit.shannon).toString(
+              AmountUnit.ckb,
+              {
+                commify: true,
+                fixed: 4,
+              }
+            )
+          : "-";
+      },
+      cumYield() {
+        return this.cumYieldAmount
+          ? new Amount(this.cumYieldAmount, AmountUnit.shannon).toString(
+              AmountUnit.ckb,
+              {
+                commify: true,
+                fixed: 4,
+              }
+            )
+          : "-";
       },
       amount: {
         get() {
@@ -349,6 +372,7 @@
   }
 
   .meta-text {
+    font-size: 0.8em;
     font-weight: 500;
   }
 

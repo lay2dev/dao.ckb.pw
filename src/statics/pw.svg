@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="800px" viewBox="0 0 800 800" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>P Wallet /800*800</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0.919060049%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#ABABF5" offset="0%"></stop>
+            <stop stop-color="#7274FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="P-Wallet-/800*800" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-2-Copy" transform="translate(42.000000, 0.000000)">
+            <path d="M0,0 L384.587156,0 C568.467214,3.90602087 716.330275,154.265897 716.330275,339.082569 C716.330275,523.89924 568.469626,674.181207 384.589567,678.087228 L384.587156,678.165138 L176.146789,678.165138 L176.146789,800 L0,800 L0,0 Z" id="Path" fill="#5855E5"></path>
+            <g id="Group" transform="translate(246.605505, 217.247706)">
+                <path d="M107.155963,0 C166.336568,0 214.311927,47.9753589 214.311927,107.155963 L214.311927,107.155963 L214.311927,245.137615 L0,245.137615 L0,107.155963 L0.0143558376,105.383944 C0.960627703,47.0206493 48.567165,0 107.155963,0 Z" id="Combined-Shape-Copy-2" fill="#BCBDFF"></path>
+                <path d="M214.297571,105.383944 L214.311927,107.155963 L214.311927,245.137615 L64.587156,245.137615 L64.587156,107.155963 L64.6015118,105.383944 C65.3660387,58.2301482 96.5885331,18.4803809 139.45283,4.95080704 C182.313962,18.484726 213.533086,58.2327254 214.297571,105.383944 Z" id="Combined-Shape" fill="#1F1468"></path>
+            </g>
+            <polygon id="Rectangle" fill="url(#linearGradient-1)" points="246.605505 462.385321 311.192661 462.385321 311.192661 800 0 800"></polygon>
+        </g>
+    </g>
+</svg>

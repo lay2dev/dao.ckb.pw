@@ -36,7 +36,12 @@
               color="grey-5"
               icon="info"
             >
-              <q-tooltip max-width="50%">{{phaseHint}}</q-tooltip>
+              <q-tooltip
+                anchor="top middle"
+                self="bottom middle"
+                :offset="[10, 10]"
+                max-width="50%"
+              >{{phaseHint}}</q-tooltip>
             </q-btn>
           </div>
         </div>
@@ -71,6 +76,7 @@
             class="text-accent text-center text-bold"
           >{{$t(cell.phase === 4 ? 'dao_item.label.risk_notice':'dao_item.label.confirm')}}</span>
           <span
+            v-if="cell.phase !== undefined"
             class="text-grey q-my-md"
           >{{$t(`phase_alert.${cell.phase}`, {blocks: 180 - cell.epochsPast, hours: cell.hoursLeft, days: cell.daysLeft})}}</span>
         </div>
@@ -165,6 +171,7 @@
       },
       phaseHint() {
         const { phase } = this.cell;
+        if (!phase) return "";
         return this.$t(`phase_hint.${phase}`, {
           hours: this.cell.hoursLeft,
           days: this.cell.daysLeft,

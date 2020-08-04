@@ -5,10 +5,11 @@ export default {
       apc: "Annual Yield Rate",
       balance: "Balance",
       locked: "Deposited in DAO",
+      yesterday: "Yesterday",
       cur_yield: "Yield",
-      cum_yield: "Yield(Cumulative)"
+      cum_yield: "Cumulative"
     },
-    btn: { deposit: "Deposit" }
+    btn: { deposit: "Deposit", wallet: "Go to Wallet" }
   },
 
   dao_item: {
