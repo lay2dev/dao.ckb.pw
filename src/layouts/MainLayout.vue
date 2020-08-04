@@ -24,9 +24,7 @@
       const devSpec = CHAIN_SPECS.Lay2;
       const pwcore = await new PWCore(process.env.CKB_NODE).init(
         new EthProvider(),
-        new PwCollector(process.env.BASE_URL),
-        ChainID.ckb_dev,
-        devSpec
+        new PwCollector(process.env.BASE_URL)
       );
       this.$store.commit("pwcore/updateAddress", PWCore.provider.address);
       console.log("[init] address: ", PWCore.provider.address.addressString);
