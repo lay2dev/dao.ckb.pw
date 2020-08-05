@@ -9,21 +9,27 @@ const apiGet = async (url, params) => get(BASE_URL + url, params);
 const apiPost = async (url, params) => post(BASE_URL + url, params);
 
 const API = {
-  loadMetaData: async () => {
+  loadMetaData: async address => {
     const res = await apiGet("/dao/stats", {
-      lockHash: PWCore.provider.address.toLockScript().toHash()
+      lockHash: address.toLockScript().toHash()
     });
 
     const { estimated_apc: apc } = res.data.global;
-    const { balance, locked, yieldLive, yieldCumulative } = res.data.user;
+    const {
+      balance,
+      locked,
+      yesterday,
+      yieldLive,
+      yieldCumulative
+    } = res.data.user;
 
-    return { apc, balance, locked, yieldLive, yieldCumulative };
+    return { apc, balance, locked, yesterday, yieldLive, yieldCumulative };
   },
 
-  loadDaoCells: async type => {
+  loadDaoCells: async (address, type) => {
     const cells = (
       await apiGet("/dao/daoList", {
-        lockHash: PWCore.provider.address.toLockScript().toHash(),
+        lockHash: address.toLockScript().toHash(),
         type
       })
     ).data;

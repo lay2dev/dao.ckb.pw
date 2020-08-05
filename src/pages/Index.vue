@@ -32,7 +32,7 @@
             <q-card-section class="column justify-around">
               <div class="row items-center q-gutter-xs">
                 <div class="text-grey text-caption">{{$t('meta.label.yesterday')}}</div>
-                <div class="text-accent meta-text">{{curYield}}</div>
+                <div class="text-accent meta-text">{{yesterday}}</div>
               </div>
               <div class="row items-center q-gutter-xs">
                 <div class="text-grey text-caption">{{$t('meta.label.cum_yield')}}</div>
@@ -162,6 +162,7 @@
         balanceAmount: Amount.ZERO,
         depositAmount: new Amount("1000"),
         lockedAmount: Amount.ZERO,
+        yesterdayAmount: Amount.ZERO,
         curYieldAmount: Amount.ZERO,
         cumYieldAmount: Amount.ZERO,
 
@@ -181,27 +182,25 @@
       if (this.$q.localStorage.has("banner")) {
         this.banner = this.$q.localStorage.getItem("banner");
       }
-      if (PWCore.provider) {
-        await this.load();
-      }
       this.checker = setInterval(async () => {
-        await this.load(true);
+        await this.load(this.address, true);
       }, 5000);
     },
     destroyed() {
       this.checker && clearInterval(this.checker);
     },
     methods: {
-      async load(silent) {
+      async load(address, silent = false) {
         !silent && this.showLoading(true);
         const res = await Promise.all([
-          await API.loadMetaData(),
-          await API.loadDaoCells(),
+          await API.loadMetaData(address),
+          await API.loadDaoCells(address),
         ]);
         this.apc = Number(res[0].apc);
         this.items = res[1];
         this.balanceAmount = res[0].balance;
         this.lockedAmount = res[0].locked;
+        this.yesterdayAmount = res[0].yesterday;
         this.curYieldAmount = res[0].yieldLive;
         this.cumYieldAmount = res[0].yieldCumulative;
 
@@ -303,6 +302,17 @@
             )
           : "-";
       },
+      yesterday() {
+        return this.yesterdayAmount
+          ? new Amount(this.yesterdayAmount, AmountUnit.shannon).toString(
+              AmountUnit.ckb,
+              {
+                commify: true,
+                fixed: 4,
+              }
+            )
+          : "-";
+      },
       curYield() {
         return this.curYieldAmount
           ? new Amount(this.curYieldAmount, AmountUnit.shannon).toString(
@@ -344,8 +354,8 @@
       },
     },
     watch: {
-      address() {
-        this.load();
+      address(address) {
+        this.load(address);
       },
     },
   };
