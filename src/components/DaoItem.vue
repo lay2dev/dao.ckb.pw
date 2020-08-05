@@ -17,7 +17,7 @@
           <div
             class="text-caption text-grey q-mr-sm"
           >{{$t('dao_item.label.deposited_at')}} {{depositedAt}}</div>
-          <div v-if="completedAt" class="row text-caption text-grey">
+          <div v-if="completedAt" class="row text-caption text-grey q-mr-sm">
             <div class="q-mx-sm">-</div>
             {{$t('dao_item.label.completed_at')}} {{completedAt}}
           </div>
@@ -43,6 +43,16 @@
                 max-width="50%"
               >{{phaseHint}}</q-tooltip>
             </q-btn>
+            <q-btn
+              color="primary"
+              flat
+              unelevated
+              round
+              dense
+              icon="ion-md-open"
+              size="sm"
+              @click="openExplorer(cell.outPoint.txHash)"
+            />
           </div>
         </div>
       </div>
@@ -122,6 +132,7 @@
 <script>
   import { AmountUnit } from "@lay2/pw-core";
   import { DaoCell } from "../models";
+  import { openURL } from "quasar";
   export default {
     name: "DaoItem",
     props: ["cell"],
@@ -183,6 +194,8 @@
       withdraw() {
         this.$emit("withdraw", this.cell);
       },
+      openExplorer: (txHash) =>
+        openURL(`${process.env.EXPLORER_URL}/transaction/${txHash}`),
     },
   };
 </script>
