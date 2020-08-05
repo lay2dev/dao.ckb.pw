@@ -21,13 +21,20 @@
     async created() {
       this.$i18n.locale = this.$q.lang.getLocale();
 
-      const devSpec = CHAIN_SPECS.Lay2;
+      let devSpec = undefined,
+        chainId = undefined;
+      if (process.env.CKB_NODE === "https://lay2.ckb.dev") {
+        devSpec = CHAIN_SPECS.Lay2;
+        chainId = ChainID.ckb_dev;
+      }
+
       const pwcore = await new PWCore(process.env.CKB_NODE).init(
         new EthProvider(),
         new PwCollector(process.env.BASE_URL),
-        ChainID.ckb_dev,
+        chainId,
         devSpec
       );
+
       this.$store.commit("pwcore/updateAddress", PWCore.provider.address);
       console.log("[init] address: ", PWCore.provider.address.addressString);
       if (!!window.imToken) {
