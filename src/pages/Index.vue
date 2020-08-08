@@ -235,8 +235,10 @@
           this.setPendingBanner(txHash);
           console.log("[deposit] txhash:", txHash);
         } catch (e) {
-          this.$q.notify({ color: "negative", message: e.toString() });
-          console.error("[deposit]", e.stack);
+          if (e.message.indexOf("User denied") === -1) {
+            this.$q.notify({ color: "negative", message: e.message });
+          }
+          console.log("[deposit]", e.stack);
         }
         this.showLoading(false);
       },
