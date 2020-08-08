@@ -9,7 +9,11 @@ export default {
       cur_yield: "Yield",
       cum_yield: "Cumulative"
     },
-    btn: { deposit: "Deposit", wallet: "Go to Wallet" }
+    btn: { deposit: "Deposit", wallet: "Go to Wallet" },
+    msg: {
+      minimum: "Minimum deposit amount is 102 CKB",
+      maximum: "Insufficient Balance"
+    }
   },
 
   dao_item: {

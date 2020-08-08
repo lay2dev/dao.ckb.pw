@@ -9,7 +9,11 @@ export default {
       cur_yield: "当前收益",
       cum_yield: "累计收益"
     },
-    btn: { deposit: "存入", wallet: "前往钱包" }
+    btn: { deposit: "存入", wallet: "前往钱包" },
+    msg: {
+      minimum: "最小金额为 102 CKB",
+      maximum: "余额不足"
+    }
   },
 
   dao_item: {

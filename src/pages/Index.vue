@@ -72,13 +72,21 @@
             dark
             standout
             clearable
+            :error="validAmount !== true"
             clear-icon="close"
+            hide-bottom-space
             class="col amount-input q-mr-md"
             suffix="CKB"
             v-model="amount"
-            type="phone"
           />
-          <q-btn color="primary" rounded no-caps :label="$t('meta.btn.deposit')" @click="deposit" />
+          <q-btn
+            color="primary"
+            :disable="validAmount!==true"
+            rounded
+            no-caps
+            :label="$t('meta.btn.deposit')"
+            @click="deposit"
+          />
         </div>
       </q-card>
     </div>
@@ -148,7 +156,7 @@
   import Withdraw1Builder from "../services/withdraw1-builder";
   import PWCore, { AmountUnit, Amount, EthSigner } from "@lay2/pw-core";
   import { mapGetters } from "vuex";
-  import { openURL, QSpinnerBall } from "quasar";
+  import { openURL, QSpinnerBall, Notify } from "quasar";
   import Withdraw2Builder from "../services/withdraw2-builder";
 
   export default {
@@ -165,6 +173,7 @@
         yesterdayAmount: Amount.ZERO,
         curYieldAmount: Amount.ZERO,
         cumYieldAmount: Amount.ZERO,
+        validAmount: true,
 
         filter: "locked",
         items: [],
@@ -344,6 +353,17 @@
           val = val.split(",").join("");
           if (val.match(/^\d+(\.\d+)?$/)) {
             this.depositAmount = new Amount(val);
+            if (this.depositAmount.lt(new Amount(102))) {
+              this.validAmount = this.$t("meta.msg.minimum");
+            } else if (
+              this.depositAmount.gte(
+                new Amount(this.balanceAmount, AmountUnit.shannon)
+              )
+            ) {
+              this.validAmount = this.$t("meta.msg.maximum");
+            } else {
+              this.validAmount = true;
+            }
           }
         },
       },
@@ -356,6 +376,15 @@
     watch: {
       address(address) {
         this.load(address);
+      },
+      validAmount(val) {
+        if (val !== true) {
+          Notify.create({
+            type: "negative",
+            message: val,
+            timeout: 3000,
+          });
+        }
       },
     },
   };
