@@ -12,7 +12,8 @@ export default {
     btn: { deposit: "存入", wallet: "前往钱包" },
     msg: {
       minimum: "最小金额为 102 CKB",
-      maximum: "余额不足"
+      maximum: "余额不足",
+      minChange: "钱包剩余金额不能小于 62 CKB，以备后续提现作为手续费"
     }
   },
 

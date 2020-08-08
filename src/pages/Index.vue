@@ -361,6 +361,14 @@
               )
             ) {
               this.validAmount = this.$t("meta.msg.maximum");
+            } else if (
+              this.depositAmount.gte(
+                new Amount(this.balanceAmount, AmountUnit.shannon).sub(
+                  new Amount("62")
+                )
+              )
+            ) {
+              this.validAmount = this.$t("meta.msg.minChange");
             } else {
               this.validAmount = true;
             }

@@ -12,7 +12,9 @@ export default {
     btn: { deposit: "Deposit", wallet: "Go to Wallet" },
     msg: {
       minimum: "Minimum deposit amount is 102 CKB",
-      maximum: "Insufficient Balance"
+      maximum: "Insufficient Balance",
+      minChange:
+        "Remaining balance should be more than 62 CKB, to provide fee for withdraw"
     }
   },
 
