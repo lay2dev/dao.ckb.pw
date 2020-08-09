@@ -402,7 +402,7 @@
 
 <style lang="scss" scoped>
   .main {
-    background: #dfdfdf;
+    background: $grey-2;
   }
 
   .dashboard {
