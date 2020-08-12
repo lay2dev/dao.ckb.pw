@@ -55,9 +55,9 @@ export default {
 
   phase_alert: {
     1: "",
-    2: "Notice: withdraw can be performed after {blocks} blocks (about {days} days, {hours} hours)",
-    3: "Notice: withdraw can be performed after {blocks} blocks (about {days} days, {hours} hours)",
-    4: "Warning: There are only {blocks} blocks (about {hours} hours) left before this period ends. Please ensure that the withdraw transaction can be packaged before the end of this period, or the withdraw request will be postponed for at least 30 days",
+    2: "Notice: withdraw can be performed after {blocks} epochs (about {days} days, {hours} hours)",
+    3: "Notice: withdraw can be performed after {blocks} epochs (about {days} days, {hours} hours)",
+    4: "Warning: There are only {blocks} epochs (about {hours} hours) left before this period ends. Please ensure that the withdraw transaction can be packaged before the end of this period, or the withdraw request will be postponed for at least 30 days",
     5: "",
     6: "",
     7: ""
