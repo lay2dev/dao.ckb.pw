@@ -26,11 +26,13 @@ const API = {
     return { apc, balance, locked, yesterday, yieldLive, yieldCumulative };
   },
 
-  loadDaoCells: async (address, type) => {
+  loadDaoCells: async (address, type, lastId, size = 200) => {
     const cells = (
       await apiGet("/dao/daoList", {
         lockHash: address.toLockScript().toHash(),
-        type
+        type,
+        lastId,
+        size
       })
     ).data;
     const daoCells = [];
