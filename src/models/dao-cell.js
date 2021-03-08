@@ -17,7 +17,13 @@ export class DaoCell extends Cell {
     daysLeft,
     epochsPast
   ) {
-    super(capacity, lock, PWCore.config.daoType.script, outPoint, data);
+    super(
+      capacity,
+      lock,
+      PWCore.config.daoType.script,
+      outPoint,
+      data || "0x0000000000000000"
+    );
     this.currentCapacity = currentCapacity;
     this.revenue = currentCapacity.sub(capacity);
     this.apc = apc;

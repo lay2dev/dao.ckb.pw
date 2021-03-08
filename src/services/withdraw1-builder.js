@@ -28,7 +28,9 @@ export default class Withdraw1Builder extends Builder {
 
     const inputCells = await PWCore.defaultCollector.collect(
       this.cell.lock.toAddress(),
-      neededAmount
+      {
+        neededAmount
+      }
     );
 
     const inputAmount = inputCells

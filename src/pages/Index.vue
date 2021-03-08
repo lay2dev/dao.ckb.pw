@@ -218,6 +218,7 @@
             this.items.find((i) =>
               this.banner.link.endsWith(i.outPoint.txHash)
             ) !== undefined
+            || this.banner.expired <= new Date().getTime()
           ) {
             this.banner = {};
             this.$q.localStorage.remove("banner");
@@ -266,6 +267,7 @@
         this.banner = {
           show: true,
           type: "positive",
+          expired: new Date().getTime() + 5 * 60 * 1000,
           loading: true,
           message: this.$t("banner.pending"),
           link: `${process.env.EXPLORER_URL}/transaction/${txHash}`,

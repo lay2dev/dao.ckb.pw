@@ -26,10 +26,9 @@ export default class DepositBuilder extends Builder {
     let neededAmount = this.capacity;
     if (fee) neededAmount = neededAmount.add(fee);
 
-    const inputCells = await PWCore.defaultCollector.collect(
-      address,
+    const inputCells = await PWCore.defaultCollector.collect(address, {
       neededAmount
-    );
+    });
     const inputAmount = inputCells
       .map(c => c.capacity)
       .reduce((sum, a) => sum.add(a));
